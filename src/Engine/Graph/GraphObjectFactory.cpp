@@ -76,6 +76,7 @@
 #include "BinSelectorNode.h"
 #include "OscillatorNode.h"
 #include "WaveformNode.h"
+#include "CoherenceNode.h"
 
 // Bio Analysis
 #include "HrvNode.h"
@@ -193,6 +194,7 @@ GraphObjectFactory::GraphObjectFactory()
 		RegisterObjectType( new BinSelectorNode(NULL) );
 		RegisterObjectType( new OscillatorNode(NULL) );
 		RegisterObjectType( new WaveformNode(NULL) );
+		RegisterObjectType( new CoherenceNode(NULL) );
 		
 		// Bio Analysis
 		RegisterObjectType( new HrvNode(NULL) );

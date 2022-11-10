@@ -565,6 +565,12 @@
     <ClCompile Include="..\..\src\Engine\Graph\StateTransitionBrowserPlayerStoppedCondition.cpp">
       <Filter>Graph</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graph\CoherenceNode.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\DSP\CoherenceProcessor.cpp">
+      <Filter>DSP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine\Core\AABB.h">
@@ -1281,6 +1287,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine\Graph\StateTransitionBrowserPlayerStoppedCondition.h">
       <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graph\CoherenceNode.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\DSP\CoherenceProcessor.h">
+      <Filter>DSP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
