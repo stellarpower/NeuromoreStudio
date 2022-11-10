@@ -32,7 +32,6 @@
 #include "WindowFunction.h"
 
 #include <numeric>
-#include <algorithm>
 
 using namespace Core;
 

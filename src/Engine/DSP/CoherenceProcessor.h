@@ -30,6 +30,8 @@
 #include "FFT.h"
 #include "Channel.h"
 
+#include <vector>
+
 // FFT processor
 class ENGINE_API CoherenceProcessor : public ChannelProcessor
 {
