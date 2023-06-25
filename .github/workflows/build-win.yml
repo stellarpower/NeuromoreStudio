@@ -21,8 +21,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2019,windows-2022]
-        arch: [x64,x86,arm64]
-        branding: [neuromore,supermind]
+        arch: [x64] #,x86,arm64]
+        branding: [neuromore] #,supermind]
     steps:
     
     # Checkout
