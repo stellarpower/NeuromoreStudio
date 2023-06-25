@@ -5,8 +5,7 @@ on:
   push:
     branches:
       - 'master'
-    tags:
-      - '*'
+      - 'release'
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -21,18 +20,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022]
+        os: [windows-2019,windows-2022]
         arch: [x64,x86,arm64]
-        branding: [neuromore,supermind,natus]
+        branding: [neuromore,supermind]
     steps:
-
+    
     # Checkout
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        submodules: recursive
-        token: ${{ secrets.PAT_GITHUB_ACTIONS }}
-        lfs: false
 
     # Load Dependencies from Cache
     - name: Cache Dependencies
@@ -105,8 +100,8 @@ jobs:
     - name: PDB Info
       run: llvm-pdbutil dump --summary ./build/make/bin/win-${{ env.TARGET_ARCH }}/Studio.pdb
 
-    # Upload Studio
-    - name: Upload Studio
+    # Upload
+    - name: Upload
       uses: actions/upload-artifact@v3
       with:
         name: Binaries (${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.branding }})
@@ -115,16 +110,23 @@ jobs:
           ./build/make/bin/win-${{ matrix.arch }}/*.dll
           ./build/make/bin/win-${{ matrix.arch }}/*.pdb
 
-    # Upload Engine
-    - name: Upload Engine
+    # Upload EngineLIB
+    - name: Upload EngineLIB
       uses: actions/upload-artifact@v3
       with:
-        name: Engine (${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.branding }})
+        name: EngineLIB (${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.branding }})
         path: |
           ./src/Engine/neuromoreEngine.h
           ./build/make/lib/win-${{ matrix.arch }}/EngineLIB.dll
           ./build/make/lib/win-${{ matrix.arch }}/EngineLIB.lib
           ./build/make/lib/win-${{ matrix.arch }}/EngineLIB.pdb
+
+    # Upload EngineJNI
+    - name: Upload EngineJNI
+      uses: actions/upload-artifact@v3
+      with:
+        name: EngineJNI (${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.branding }})
+        path: |
           ./build/make/lib/win-${{ matrix.arch }}/EngineJNI.dll
           ./build/make/lib/win-${{ matrix.arch }}/EngineJNI.pdb
           ./build/make/lib/win-${{ matrix.arch }}/EngineJNI.jar
@@ -137,51 +139,34 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022]
-        branding: [neuromore,supermind,natus]
-    env:
-      BRANDING: ${{ matrix.branding }}
+        os: [windows-2019,windows-2022]
+        branding: [neuromore]
     steps:
-
+      
     # Checkout
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        submodules: recursive
-        token: ${{ secrets.PAT_GITHUB_ACTIONS }}
-        lfs: true
 
     # Download X64 Build
     - name: Download X64 Build
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v2
       with:
         name: Binaries (${{ matrix.os }}-x64-${{ matrix.branding }})
         path: ./build/make/bin/win-x64/
 
     # Download X86 Build
     - name: Download X86 Build
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v2
       with:
         name: Binaries (${{ matrix.os }}-x86-${{ matrix.branding }})
         path: ./build/make/bin/win-x86/
 
     # Download ARM64 Build
     - name: Download ARM64 Build
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v2
       with:
         name: Binaries (${{ matrix.os }}-arm64-${{ matrix.branding }})
         path: ./build/make/bin/win-arm64/
-
-    # Free Disk Space
-    - name: Free Disk Space
-      shell: cmd
-      run: |
-        rmdir ${{ github.workspace }}\.git /s /q
-        rmdir ${{ github.workspace }}\visualizations\ForestScene\linux-x64 /s /q
-        rmdir ${{ github.workspace }}\visualizations\ForestScene\osx-all /s /q
-        rmdir ${{ github.workspace }}\visualizations\InfiniteTunnel\linux-x64 /s /q
-        rmdir ${{ github.workspace }}\visualizations\InfiniteTunnel\osx-all /s /q              
-        fsutil volume diskfree d:
 
     # Developer Console (X64)
     - name: MSVC Developer Console (X64)
@@ -203,37 +188,18 @@ jobs:
       env:
         SIGN_PFX_FILE: ../../certs/TrueCert.pfx
         SIGN_PFX_PASS: ${{ secrets.SIGN_PFX_PASS }}
-        PUBLISHERCN: Neuromore Co
-        PUBLISHER: CN=Neuromore Co, O=Neuromore Co, S=Florida, C=US
+        PUBLISHERCN: neuromore co
+        PUBLISHER: CN=neuromore co, O=neuromore co, STREET=382 NE 191st St, L=Miami, S=Florida, PostalCode=33179, C=US
       run: make dist
-
-    # Remaining Free Disk Space
-    - name: Remaining Free Disk Space
-      shell: cmd
-      run: |
-        fsutil volume diskfree d:
     
-    # Upload ZIP
-    - name: Upload ZIP
+    # Upload
+    - name: Upload
       uses: actions/upload-artifact@v3
       with:
-        name: Packages ZIP (${{ matrix.os }}-${{ matrix.branding }})
+        name: Packages (${{ matrix.os }}-${{ matrix.branding }})
         path: |
-          ./dist/win-10/*.zip
-
-    # Upload Packages
-    - name: Upload App
-      uses: actions/upload-artifact@v3
-      with:
-        name: Packages App (${{ matrix.os }}-${{ matrix.branding }})
-        path: |
+          ./dist/win-10/*.appx
           ./dist/win-10/*.appxbundle
           ./dist/win-10/*.appxupload
 
-    # Upload to Github Release
-    - name: Upload to Github Release
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/') && (matrix.branding == 'neuromore')
-      with:
-        token: ${{ secrets.PAT_GITHUB_ACTIONS }}
-        files: ./dist/win-10/*.zip
+
